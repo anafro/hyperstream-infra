@@ -1,0 +1,177 @@
+services:
+    nginx:
+        image: nginx:1.29.4-alpine3.23
+        restart: unless-stopped
+        depends_on:
+            website:
+                condition: service_started
+            leonardo:
+                condition: service_healthy
+        ports:
+            - 80:80
+            - 443:443
+        healthcheck:
+            test: ["CMD-SHELL", "nginx -t || exit 1"]
+            interval: 30s
+            timeout: 3s
+            start_period: 15s
+            start_interval: 1s
+            retries: 3
+        volumes:
+            - ./secrets/nginx.conf:/etc/nginx/nginx.conf:ro
+        networks:
+            - internal
+    postgresql:
+        image: postgres:18.1-alpine3.23
+        restart: unless-stopped
+        volumes:
+            - "postgresql:/var/lib/postgresql"
+        secrets:
+            - postgresql-username
+            - postgresql-password
+            - postgresql-database
+        environment:
+            - PSUSER_FILE=/run/secrets/postgresql-username
+            - POSTGRES_USER_FILE=/run/secrets/postgresql-username
+            - POSTGRES_PASSWORD_FILE=/run/secrets/postgresql-password
+            - POSTGRES_DB_FILE=/run/secrets/postgresql-database
+        healthcheck:
+            test:
+                [
+                    "CMD-SHELL",
+                    "pg_isready -d ${POSTGRESQL_DATABASE} -U ${POSTGRESQL_USERNAME} || exit 1",
+                ]
+            interval: 5s
+            timeout: 3s
+            start_period: 10s
+            start_interval: 1s
+            retries: 2
+        networks:
+            - internal
+    localstack:
+        image: gresau/localstack-persist:4
+        restart: unless-stopped
+        volumes:
+            - "localstack:/persisted-data"
+        environment:
+            - SERVICES=s3
+            - DEFAULT_REGION=eu-central-1
+            - PERSIST_BASE_DIR=/persisted-data
+            - PERSIST_DEFAULT=0
+            - PERSIST_S3=1
+            - AWS_ACCESS_KEY_ID_FILE=/run/secrets/aws-access-key
+            - AWS_SECRET_ACCESS_KEY_FILE=/run/secrets/aws-secret-key
+        secrets:
+            - aws-access-key
+            - aws-secret-key
+        healthcheck:
+            test: ["CMD", "bash", "-c", "awslocal s3 ls"]
+            interval: 5s
+            timeout: 3s
+            start_period: 10s
+            start_interval: 1s
+            retries: 2
+        networks:
+            - internal
+    rabbitmq:
+        image: rabbitmq:4.2-alpine
+        restart: unless-stopped
+        volumes:
+            - "rabbitmq:/var/lib/rabbitmq"
+        environment:
+            - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+            - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+        healthcheck:
+            test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+            interval: 30s
+            timeout: 3s
+            start_period: 15s
+            start_interval: 1s
+            retries: 3
+        networks:
+            - internal
+    leonardo:
+        image: anafro/hyperstream-leonardo:v0.0.0-beta
+        restart: unless-stopped
+        depends_on:
+            localstack:
+                condition: service_healthy
+            rabbitmq:
+                condition: service_healthy
+        healthcheck:
+            test: ["CMD-SHELL", "nc -z localhost 5001"]
+            interval: 30s
+            timeout: 3s
+            start_period: 15s
+            start_interval: 1s
+            retries: 3
+        networks:
+            - internal
+        entrypoint: [""]
+        command:
+            [
+                "--width",
+                "1024",
+                "--height",
+                "1024",
+                "--generator",
+                "lmc",
+                "--port",
+                "5001",
+                "nocache",
+            ]
+        environment:
+            - S3_HOST=localstack
+            - S3_ACCESS_KEY_FILE=/run/secrets/aws-access-key
+            - S3_SECRET_KEY_FILE=/run/secrets/aws-secret-key
+            - RABBITMQ_HOST=rabbitmq
+            - RABBITMQ_USER_FILE=/run/secrets/rabbitmq-username
+            - RABBITMQ_PASS_FILE=/run/secrets/rabbitmq-password
+        secrets:
+            - aws-access-key
+            - aws-secret-key
+            - rabbitmq-username
+            - rabbitmq-password
+    website:
+        image: anafro/hyperstream-website:v0.0.0-dev.10
+        restart: unless-stopped
+        volumes:
+            - website-storage:/app/storage
+            - ./secrets/laravel.env:/app/.env:ro
+        networks:
+            - internal
+        environment:
+            - MIGRATE=${HYPERSTREAM_WEBSITE_MIGRATE:-false}
+        depends_on:
+            rabbitmq:
+                condition: service_healthy
+            leonardo:
+                condition: service_healthy
+            postgresql:
+                condition: service_healthy
+
+volumes:
+    postgresql:
+    localstack:
+    rabbitmq:
+    website-storage:
+
+secrets:
+    postgresql-username:
+        file: ./secrets/postgresql-username.txt
+    postgresql-password:
+        file: ./secrets/postgresql-password.txt
+    postgresql-database:
+        file: ./secrets/postgresql-database.txt
+    aws-access-key:
+        file: ./secrets/aws-access-key.txt
+    aws-secret-key:
+        file: ./secrets/aws-secret-key.txt
+    rabbitmq-username:
+        file: ./secrets/rabbitmq-username.txt
+    rabbitmq-password:
+        file: ./secrets/rabbitmq-password.txt
+
+networks:
+    internal:
+        driver: bridge

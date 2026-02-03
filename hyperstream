@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+set -e >/dev/null
+
+if ! command -v python >/dev/null 2>&1; then
+    echo "To bootstrap Hyperstream, you should have Python."
+    echo "Install: python.org/downloads"
+
+    exit 1
+fi
+
+if ! command -v pip >/dev/null 2>&1; then
+    read -r -p "Missing: pip, install? (y/n): " install_pip
+    install_pip=${install_pip,,}
+    if [[ "$install_pip" =~ ^(yes|y)$ ]]; then
+        python -m ensurepip --upgrade
+        echo "✓ Installed pip"
+    elif [[ "$install_pip" =~ ^(no|n)$ ]]; then
+        echo "Install pip manually: https://stackoverflow.com/a/6587528/11678738"
+        echo "After install, rerun $(basename "$0")"
+        exit 2
+    fi
+fi
+
+if ! command -v poetry >/dev/null 2>&1; then
+    echo "Missing: poetry, install: python-poetry.org/docs/#installation"
+    exit 3
+fi
+
+poetry run python ./src/main.py "$@"

@@ -1,10 +1,10 @@
 import inspect
 import logging
 
-from hyperstream.alphabets import alpha, alphanumeric
-from hyperstream.secrets import generate_secret
-from hyperstream.vault import Vault
-from hyperstream.filesystem import write
+from hyperstream.vault.alphabets import alpha, alphanumeric
+from hyperstream.vault.secrets import generate_secret
+from hyperstream.vault.vault import Vault
+from hyperstream.vault.filesystem import write
 
 
 logger: logging.Logger = logging.getLogger(__name__)

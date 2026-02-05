@@ -1,9 +1,9 @@
 import logging
 from pathlib import Path
 
-from hyperstream.filesystem import read, write
-from hyperstream.secrets import generate_secret
-from hyperstream.templates import fill_template
+from hyperstream.vault.filesystem import read, write
+from hyperstream.vault.secrets import generate_secret
+from hyperstream.vault.templates import fill_template
 
 
 logger: logging.Logger = logging.getLogger(__name__)

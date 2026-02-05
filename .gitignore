@@ -1,5 +1,5 @@
 .idea
-secrets/
+/secrets/
 *.log
 __pycache__/
 .env

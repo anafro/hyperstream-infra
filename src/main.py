@@ -1,6 +1,8 @@
 import inspect
 import logging
+from rich.logging import RichHandler
 
+from hyperstream.dependencies.downloader import download_dependency
 from hyperstream.vault.alphabets import alpha, alphanumeric
 from hyperstream.vault.secrets import generate_secret
 from hyperstream.vault.vault import Vault
@@ -14,7 +16,7 @@ def main() -> None:
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s [%(levelname)s] %(message)s",
-        handlers=[logging.StreamHandler()],
+        handlers=[RichHandler(rich_tracebacks=True)],
     )
 
     logger.info("Creating secrets...")
@@ -74,6 +76,22 @@ def main() -> None:
     )
     logger.info("Secrets created")
 
+    logger.info("Downloading dependencies...")
+    download_dependency(
+        "Java agent for Open Telemetry",
+        "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v2.24.0/opentelemetry-javaagent.jar",
+        "opentelemetry-javaagent.jar",
+    )
+    logger.info("Downloaded all dependencies")
+
+    logger.info("Ready to go!")
+    logger.info("Launch hyperstream via `docker compose up`")
+
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        logger.info("Cancelled with Ctrl+C, cya!")
+    except Exception as e:
+        logger.exception(e)

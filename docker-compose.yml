@@ -2,6 +2,7 @@ services:
     # Networking
     # --------------------------
     nginx:
+        container_name: nginx
         image: nginx:1.29.4-alpine3.23
         restart: unless-stopped
         depends_on:
@@ -28,6 +29,7 @@ services:
     # Storages
     # --------------------------
     postgresql:
+        container_name: postgresql
         image: postgres:18.1-alpine3.23
         restart: unless-stopped
         volumes:
@@ -55,6 +57,7 @@ services:
         networks:
             - internal
     localstack:
+        container_name: localstack
         image: gresau/localstack-persist:4
         restart: unless-stopped
         volumes:
@@ -84,6 +87,7 @@ services:
     # Messaging
     # --------------------------
     rabbitmq:
+        container_name: rabbitmq
         image: rabbitmq:4.2-alpine
         restart: unless-stopped
         volumes:
@@ -105,6 +109,7 @@ services:
     # Observability
     # --------------------------
     otel-collector:
+        container_name: otel-collector
         image: otel/opentelemetry-collector-contrib:0.145.0
         volumes:
             - ./configs/otel-collector-config.yml:/etc/otelcol/config.yaml
@@ -117,6 +122,7 @@ services:
         networks:
             - internal
     loki:
+        container_name: loki
         image: grafana/loki:3.6.4
         volumes:
             - ./configs/loki-config.yml:/mnt/config/loki-config.yaml
@@ -131,6 +137,7 @@ services:
         networks:
             - internal
     tempo:
+        container_name: tempo
         image: grafana/tempo:2.10.0
         volumes:
             - "tempo:/var/tempo"
@@ -145,6 +152,7 @@ services:
         networks:
             - internal
     mimir:
+        container_name: mimir
         image: grafana/mimir:2.17.5
         volumes:
             - "mimir:/data"
@@ -157,6 +165,7 @@ services:
             retries: 3
             start_period: 10s
     grafana:
+        container_name: grafana
         image: grafana/grafana:12.4.0-21693836646-ubuntu
         volumes:
             - ./configs/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yaml
@@ -188,6 +197,7 @@ services:
     # --------------------------
     leonardo:
         image: anafro/hyperstream-leonardo:v0.0.0-beta
+        container_name: leonardo
         restart: unless-stopped
         depends_on:
             localstack:
@@ -229,6 +239,7 @@ services:
             - rabbitmq-username
             - rabbitmq-password
     website:
+        container_name: website
         image: anafro/hyperstream-website:v0.0.0-dev.10
         restart: unless-stopped
         volumes:

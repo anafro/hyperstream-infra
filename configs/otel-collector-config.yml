@@ -1,0 +1,36 @@
+receivers:
+    otlp:
+        protocols:
+            grpc:
+                endpoint: 0.0.0.0:4317
+
+processors:
+
+exporters:
+    loki:
+        endpoint: http://loki:3100/api/v1/push
+    tempo:
+        endpoint: http://tempo:4317/
+    mimir:
+        endpoint: http://mimir:9009/
+
+extensions:
+    health_check:
+        endpoint: 0.0.0.0:13133
+    pprof:
+        endpoint: 0.0.0.0:1777
+    zpages:
+        endpoint: 0.0.0.0:55679
+
+service:
+    extensions: [health_check, pprof, zpages]
+    pipelines:
+        traces:
+            receivers: [otlp]
+            exporters: [tempo]
+        metrics:
+            receivers: [otlp]
+            exporters: [mimir]
+        logs:
+            receivers: [otlp]
+            exporters: [loki]

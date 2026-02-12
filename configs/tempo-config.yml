@@ -1,0 +1,14 @@
+server:
+    grpc_listen_port: 4317
+
+storage:
+    trace:
+        backend: local
+        local:
+            path: /var/tempo/traces
+
+compactor:
+    compaction:
+        block_retention: 168h
+        compacted_block_retention: 1h
+        compaction_window: 1h

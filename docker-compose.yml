@@ -90,6 +90,84 @@ services:
             retries: 3
         networks:
             - internal
+    otel-collector:
+        image: otel/opentelemetry-collector-contrib:0.145.0
+        volumes:
+            - ./configs/otel-collector-config.yml:/etc/otelcol/config.yaml
+        healthcheck:
+            test: ["CMD-SHELL", "curl -f http://localhost:13133/ || exit 1"]
+            interval: 30s
+            timeout: 5s
+            retries: 3
+            start_period: 10s
+        networks:
+            - internal
+    loki:
+        image: grafana/loki:3.6.4
+        volumes:
+            - ./configs/loki-config.yml:/mnt/config/loki-config.yaml
+            - "loki:/loki"
+        command: ["-config.file=/mnt/config/loki-config.yaml"]
+        healthcheck:
+            test: wget --quiet --tries=1 --output-document=- http://localhost:3100/ready | grep -q -w ready || exit 1
+            start_period: 20s
+            interval: 10s
+            timeout: 1s
+            retries: 12
+        networks:
+            - internal
+    tempo:
+        image: grafana/tempo:2.10.0
+        volumes:
+            - "tempo:/var/tempo"
+            - ./configs/tempo-config.yml:/etc/tempo/tempo.yaml
+        command: ["-config.file=/etc/tempo/tempo.yaml"]
+        healthcheck:
+            test: ["CMD-SHELL", "curl -f http://localhost:3200/ready || exit 1"]
+            interval: 30s
+            timeout: 5s
+            retries: 3
+            start_period: 10s
+        networks:
+            - internal
+    mimir:
+        image: grafana/mimir:2.17.5
+        volumes:
+            - "mimir:/data"
+        networks:
+            - internal
+        healthcheck:
+            test: ["CMD-SHELL", "curl -f http://localhost:9009/ready || exit 1"]
+            interval: 30s
+            timeout: 5s
+            retries: 3
+            start_period: 10s
+    grafana:
+        image: grafana/grafana:12.4.0-21693836646-ubuntu
+        volumes:
+            - ./configs/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yaml
+            - "grafana:/var/lib/grafana"
+        ports:
+            - 3000:3000
+        healthcheck:
+            test:
+                [
+                    "CMD-SHELL",
+                    "curl -f http://localhost:3000/api/health || exit 1",
+                ]
+            interval: 30s
+            timeout: 5s
+            retries: 3
+            start_period: 15s
+        depends_on:
+            loki:
+                condition: service_healthy
+            tempo:
+                condition: service_healthy
+            mimir:
+                condition: service_healthy
+        networks:
+            - internal
     leonardo:
         image: anafro/hyperstream-leonardo:v0.0.0-beta
         restart: unless-stopped
@@ -154,6 +232,10 @@ volumes:
     postgresql:
     localstack:
     rabbitmq:
+    grafana:
+    loki:
+    mimir:
+    tempo:
     website-storage:
 
 secrets:

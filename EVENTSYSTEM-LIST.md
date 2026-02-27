@@ -20,7 +20,7 @@
       - [`songmeta.selected-all`](#songmetaselected-all)
 <!--toc:end-->
 
-**Hyperstream** parts emits some events.
+**Hyperstream** parts emit a bunch of events.
 To know more about the Hyperstream event system, [click here check out a dedicated document](https://github.com/anafro/hyperstream-infra/blob/main/EVENTSYSTEM-SPEC.md).
 
 ## List

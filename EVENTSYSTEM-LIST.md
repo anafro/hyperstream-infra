@@ -66,6 +66,15 @@ Here's a list that describes the content of each event.
 - `int id` - The song id that has been failed to downloaded;
 - `str message` - The message describing what went wrong;
 
+#### `song.expose`
+
+- `int id` - The song id that needs to be exposed;
+
+#### `song.exposed`
+
+- `int id` - The song that has been exposed;
+- `str url` - The temporary URL to download the song file;
+
 #### `song.get-download-metadata`
 
 *(Header only)*

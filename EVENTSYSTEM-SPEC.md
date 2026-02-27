@@ -48,6 +48,10 @@ The JSON consists of two parts: header, and content:
 * **Header** is metadata of the event. Any data that is not related
   to the concrete event MUST go to the header.
 
+> [!CAUTION]
+> When you have an event that needs no content,
+> you still MUST create a `content: {}` field in event's JSON.
+
 * **Content** is data of the concrete event type providing details about
   what happened, e.g. if the event related to user, it should likely
   contain user data, like name, ids etc.

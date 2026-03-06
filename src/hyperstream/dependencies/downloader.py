@@ -9,6 +9,12 @@ logger = logging.getLogger(__name__)
 
 def download_dependency(name: str, url: str, filename: str) -> None:
     dependencies_path.mkdir(parents=True, exist_ok=True)
+
+    file_path: Path = dependencies_path / filename
+
+    if file_path.exists():
+        return
+
     logger.info("Downloading dependency: %s...", name)
 
     with Progress(transient=True) as progress:

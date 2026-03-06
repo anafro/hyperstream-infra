@@ -3,7 +3,7 @@ import logging
 from rich.logging import RichHandler
 
 from hyperstream.dependencies.downloader import download_dependency
-from hyperstream.vault.alphabets import alpha, alphanumeric
+from hyperstream.vault.alphabets import alpha, alpha_lc, alphanumeric
 from hyperstream.vault.secrets import generate_secret
 from hyperstream.vault.vault import Vault
 from hyperstream.vault.filesystem import write
@@ -25,18 +25,28 @@ def main() -> None:
     postgresql_username = "root"
     postgresql_password = generate_secret(alphanumeric, 128)
     postgresql_database = "hyperstream"
+    postgresql_kraken_database = "hyperstream_kraken"
     aws_access_key = "test"
     aws_secret_key = "test"
+    aws_region = "us-east-1"
+    aws_leonardo_s3_bucket = generate_secret(alpha_lc, 16)
+    aws_kraken_s3_bucket = generate_secret(alpha_lc, 16)
     rabbitmq_username = generate_secret(alpha, 16)
     rabbitmq_password = generate_secret(alphanumeric, 128)
+    rabbitmq_exchange = "hyperstream.events"
 
     vault.new_file("postgresql-username.txt", postgresql_username)
     vault.new_file("postgresql-password.txt", postgresql_password)
     vault.new_file("postgresql-database.txt", postgresql_database)
+    vault.new_file("postgresql-kraken-database.txt", postgresql_kraken_database)
     vault.new_file("aws-access-key.txt", aws_access_key)
     vault.new_file("aws-secret-key.txt", aws_secret_key)
+    vault.new_file("aws-region.txt", aws_region)
+    vault.new_file("aws-leonardo-s3-bucket.txt", aws_leonardo_s3_bucket)
+    vault.new_file("aws-kraken-s3-bucket.txt", aws_kraken_s3_bucket)
     vault.new_file("rabbitmq-username.txt", rabbitmq_username)
     vault.new_file("rabbitmq-password.txt", rabbitmq_password)
+    vault.new_file("rabbitmq-exchange.txt", rabbitmq_exchange)
 
     vault.new_file_from_template(
         "rabbitmq.conf",

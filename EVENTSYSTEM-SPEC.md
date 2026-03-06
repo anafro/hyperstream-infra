@@ -91,5 +91,5 @@ The action can be:
 As you could notice:
 
 * *Request action verbs* are in Present Simple
-* *Request action verbs* are in Present Continuous
-* *Request action verbs* are in Present Perfect, without have/has been
+* *Process action verbs* are in Present Continuous
+* *Completion action verbs* are in Present Perfect, without have/has been

@@ -42,28 +42,25 @@ Here's a list that describes the content of each event.
 > For example, one user can have a phone, and a PC,
 > and have the website opened - here, there is one user, and 2 clients.
 
-#### `client.connect` and `client.disconnect`
-
-*(Header only)*
-
 ### Songs
+
+#### `song` type
+
+- `int id` - The song ID;
+- `str author` - The author of the song;
+- `str title` - The title of the song;
+- `int length` - The song length in seconds;
 
 #### `song.download`
 
 - `str query` - The song request that needs to be downloaded;
 
-#### `song.downloading`
-
-- `int id` - The song id that being downloading;
-- `int percent` - The percentage of download made;
-
 #### `song.downloaded`
 
-- `int id` - The song id that has been downloaded;
+- `...songmeta` - The song that has been downloaded;
 
 #### `song.download.fail`
 
-- `int id` - The song id that has been failed to downloaded;
 - `str message` - The message describing what went wrong;
 
 #### `song.expose`
@@ -72,38 +69,13 @@ Here's a list that describes the content of each event.
 
 #### `song.exposed`
 
-- `int id` - The song that has been exposed;
 - `str url` - The temporary URL to download the song file;
+- `...songmeta` - The song that has been exposed;
 
-#### `song.get-download-metadata`
+#### `song.list`
 
-*(Header only)*
+*(A signal)*
 
-#### `song.got-download-metadata`
+#### `song.listed`
 
-- `str author` - The author of the song;
-- `str title` - The title of the song;
-
-### Song Meta
-
-#### `songmeta` type
-
-- `int id` - The song ID;
-- `str author` - The author of the song;
-- `str title` - The title of the song;
-
-#### `songmeta.find`
-
-- `int id` - The song ID;
-
-#### `songmeta.found`
-
-- `...songmeta` - The song defined by the ID;
-
-#### `songmeta.select-all`
-
-*(Header only)*
-
-#### `songmeta.selected-all`
-
-- `songmeta[] songs` - All song meta;
+- `songmeta[]` - All the songs exist;

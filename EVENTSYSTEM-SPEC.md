@@ -60,6 +60,9 @@ The JSON consists of two parts: header, and content:
 > If you need to change the event, you MUST create a new type or version of the event
 > but MUST NOT add those to header, and MUST NOT change/add/remove required content fields.
 
+> [!NOTE]
+> An event with no content is called a **signal**.
+
 ## Event proxy
 
 To make clients aware want is going on, and also let them perform actions,

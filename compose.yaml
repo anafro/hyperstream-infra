@@ -306,6 +306,27 @@ services:
                 condition: service_healthy
         networks:
             - internal
+    shuttle:
+        image: anafro/hyperstream-shuttle:v0.0.0-rc
+        container_name: shuttle
+        environment:
+            - RABBITMQ_HOST=rabbitmq
+            - RABBITMQ_USER_FILE=/run/secrets/rabbitmq-username
+            - RABBITMQ_PASS_FILE=/run/secrets/rabbitmq-password
+            - RABBITMQ_EXCHANGE_FILE=/run/secrets/rabbitmq-exchange
+            - WEBSOCKET_HOST=0.0.0.0
+            - WEBSOCKET_PORT=44999
+            - CLIENT_EVENTS=song.find|song.download|song.expose|song.remix|remix.list|remix.expose|song.list|effect.list
+            - SERVER_EVENTS=song.found|song.downloading|song.downloaded|song.exposed|song.remixed|remix.listed|remix.exposed|song.listed|effect.listed
+        secrets:
+            - rabbitmq-username
+            - rabbitmq-password
+            - rabbitmq-exchange
+        depends_on:
+            rabbitmq:
+                condition: service_healthy
+        networks:
+            - internal
     website:
         container_name: website
         image: anafro/hyperstream-website:v0.0.0-dev.10

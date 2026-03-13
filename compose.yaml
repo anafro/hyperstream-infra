@@ -266,6 +266,46 @@ services:
             retries: 5
         networks:
             - internal
+    remixer:
+        image: anafro/hyperstream-remixer:v0.0.0-rc
+        container_name: remixer
+        restart: unless-stopped
+        environment:
+            - RABBITMQ_HOST=rabbitmq
+            - RABBITMQ_USER_FILE=/run/secrets/rabbitmq-username
+            - RABBITMQ_PASS_FILE=/run/secrets/rabbitmq-password
+            - RABBITMQ_EXCHANGE_FILE=/run/secrets/rabbitmq-exchange
+            - S3_HOST=http://localstack:4566
+            - S3_ACCESS_KEY_FILE=/run/secrets/aws-access-key
+            - S3_SECRET_KEY_FILE=/run/secrets/aws-secret-key
+            - S3_REGION_FILE=/run/secrets/aws-region
+            - S3_BUCKET_FILE=/run/secrets/aws-remixer-s3-bucket
+            - PGSQL_HOST=postgresql
+            - PGSQL_USERNAME_FILE=/run/secrets/postgresql-username
+            - PGSQL_PASSWORD_FILE=/run/secrets/postgresql-password
+            - PGSQL_DATABASE_FILE=/run/secrets/postgresql-remixer-database
+        secrets:
+            - rabbitmq-username
+            - rabbitmq-password
+            - rabbitmq-exchange
+            - aws-access-key
+            - aws-secret-key
+            - aws-region
+            - aws-remixer-s3-bucket
+            - postgresql-username
+            - postgresql-password
+            - postgresql-remixer-database
+        depends_on:
+            kraken:
+                condition: service_healthy
+            rabbitmq:
+                condition: service_healthy
+            postgresql:
+                condition: service_healthy
+            localstack:
+                condition: service_healthy
+        networks:
+            - internal
     website:
         container_name: website
         image: anafro/hyperstream-website:v0.0.0-dev.10

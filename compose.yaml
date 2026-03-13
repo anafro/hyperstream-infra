@@ -311,6 +311,8 @@ secrets:
         file: ./secrets/postgresql-database.txt
     postgresql-kraken-database:
         file: ./secrets/postgresql-kraken-database.txt
+    postgresql-remixer-database:
+        file: ./secrets/postgresql-remixer-database.txt
     aws-access-key:
         file: ./secrets/aws-access-key.txt
     aws-secret-key:
@@ -326,6 +328,8 @@ secrets:
     aws-kraken-s3-bucket:
         file: ./secrets/aws-kraken-s3-bucket.txt
     aws-leonardo-s3-bucket:
+        file: ./secrets/aws-leonardo-s3-bucket.txt
+    aws-remixer-s3-bucket:
         file: ./secrets/aws-leonardo-s3-bucket.txt
 
 networks:

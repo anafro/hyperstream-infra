@@ -43,7 +43,6 @@ services:
             - PSUSER_FILE=/run/secrets/postgresql-username
             - POSTGRES_USER_FILE=/run/secrets/postgresql-username
             - POSTGRES_PASSWORD_FILE=/run/secrets/postgresql-password
-            - POSTGRES_DB_FILE=/run/secrets/postgresql-database
         healthcheck:
             test:
                 [

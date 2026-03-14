@@ -6,4 +6,6 @@ __pycache__/
 .venv/
 /bin/
 /docker-compose.override.yml
+/docker-compose.override.yml.bak
 /compose.override.yaml
+/compose.override.yaml.bak

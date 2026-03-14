@@ -85,6 +85,7 @@ def main() -> None:
         "\n".join(
             f"CREATE DATABASE {db};"
             for db in [
+                postgresql_database,
                 postgresql_kraken_database,
                 postgresql_remixer_database,
             ]

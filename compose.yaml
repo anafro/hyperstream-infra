@@ -329,7 +329,7 @@ services:
             - internal
     website:
         container_name: website
-        image: anafro/hyperstream-website:v0.0.0-dev.10
+        image: anafro/hyperstream-website:v0.0.0-rc
         restart: unless-stopped
         volumes:
             - website-storage:/app/storage
